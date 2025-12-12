@@ -1,0 +1,65 @@
+name: Deploy DDL to Azure SQL
+
+on:
+  workflow_dispatch:      # Manual trigger only
+
+jobs:
+  deploy-ddl:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout repo
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # Login to Azure using a service principal
+    # This step authenticates the runner using the stored GitHub secrets
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: |
+          {
+            "clientId": "${{ secrets.AZURE_SP_CLIENT_ID }}",
+            "clientSecret": "${{ secrets.AZURE_SP_CLIENT_SECRET }}",
+            "tenantId": "${{ secrets.AZURE_SP_TENANT_ID }}",
+            "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+          }
+
+    # Install SQLCMD (Fix for 'E: Unable to locate package mssql-tools')
+    # We must add the Microsoft repository before installation.
+    - name: Install SQLCMD and Prerequisites
+      run: |
+        echo "Adding Microsoft SQL Server repository..."
+        
+        # 1. Import the GPG key
+        curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+        
+        # 2. Add the repository configuration (for Ubuntu 20.04 runner)
+        curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+        
+        # 3. Update the package list to include the new repository
+        sudo apt-get update
+        
+        # 4. Install mssql-tools and unixodbc-dev (prerequisite)
+        sudo apt-get install -y mssql-tools unixodbc-dev
+
+        # 5. Add the mssql-tools binary directory to the PATH for the current job execution
+        echo "/opt/mssql-tools/bin" >> $GITHUB_PATH
+
+    # Execute all SQL files
+    - name: Deploy DDL Scripts to Azure SQL
+      run: |
+        echo "Starting DDL deployment..."
+
+        # The 'sqlcmd' command is now available in the PATH via $GITHUB_PATH
+        for file in $(find ${{ secrets.SQL_FOLDER_PATH }} -name "*.sql" | sort); do
+          echo "Running $file"
+          sqlcmd \
+            -S "${{ secrets.AZURE_SQL_SERVER }}" \
+            -d "${{ secrets.AZURE_SQL_DATABASE }}" \
+            -U "${{ secrets.AZURE_SQL_USERNAME }}" \
+            -P "${{ secrets.AZURE_SQL_PASSWORD }}" \
+            -i "$file"
+        done
+
+        echo "Deployment complete."
