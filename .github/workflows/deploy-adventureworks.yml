@@ -52,10 +52,10 @@ jobs:
         else
           echo "Creating schema: ${{ github.event.inputs.schema_name }}"
           /opt/mssql-tools18/bin/sqlcmd \
-            -S ${{ env.AZURE_SQL_SERVER }} \
-            -d ${{ env.AZURE_SQL_DATABASE }} \
-            -U "${{ env.SQL_ADMIN_USER }}" \
-            -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+            -S ${{ secrets.AZURE_SQL_SERVER }} \
+            -d ${{ secrets.AZURE_SQL_DATABASE }} \
+            -U "${{ secrets.AZURE_SQL_USERNAME }}" \
+            -P "${{ secrets.AZURE_SQL_PASSWORD  }}" \
             -C \
             -Q "CREATE SCHEMA [${{ github.event.inputs.schema_name }}]"
           echo "✓ Schema created successfully"
@@ -75,10 +75,10 @@ jobs:
       run: |
         echo "Creating tables..."
         /opt/mssql-tools18/bin/sqlcmd \
-          -S ${{ env.AZURE_SQL_SERVER }} \
-          -d ${{ env.AZURE_SQL_DATABASE }} \
-          -U "${{ env.SQL_ADMIN_USER }}" \
-          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -S ${{ secrets.AZURE_SQL_SERVER }} \
+          -d ${{ secrets.AZURE_SQL_DATABASE }} \
+          -U "${{ secrets.AZURE_SQL_USERNAME }}" \
+          -P "${{ secrets.AZURE_SQL_PASSWORD }}" \
           -C \
           -i create_all_tables.sql
 
@@ -89,10 +89,10 @@ jobs:
       run: |
         echo "Verifying tables..."
         TABLE_COUNT=$(/opt/mssql-tools18/bin/sqlcmd \
-          -S ${{ env.AZURE_SQL_SERVER }} \
-          -d ${{ env.AZURE_SQL_DATABASE }} \
-          -U "${{ env.SQL_ADMIN_USER }}" \
-          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -S ${{ secrets.AZURE_SQL_SERVER }} \
+          -d ${{ secrets.AZURE_SQL_DATABASE }} \
+          -U "${{ secrets.AZURE_SQL_USERNAME }}" \
+          -P "${{ secrets.AZURE_SQL_PASSWORD }}" \
           -C \
           -h -1 \
           -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables WHERE schema_id = SCHEMA_ID('${{ github.event.inputs.schema_name }}')" | tr -d ' ')
@@ -123,10 +123,10 @@ jobs:
             echo "Importing: $tablename"
 
             /opt/mssql-tools18/bin/bcp "${{ github.event.inputs.schema_name }}.$tablename" in "$csvfile" \
-              -S ${{ env.AZURE_SQL_SERVER }} \
-              -d ${{ env.AZURE_SQL_DATABASE }} \
-              -U "${{ env.SQL_ADMIN_USER }}" \
-              -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+              -S ${{ secrets.AZURE_SQL_SERVER}} \
+              -d ${{ secrets.AZURE_SQL_DATABASE  }} \
+              -U "${{ secrets.AZURE_SQL_USERNAME }}" \
+              -P "${{ secrets.AZURE_SQL_PASSWORD}}" \
               -c \
               -t '\t' \
               -r '\n' \
@@ -153,10 +153,10 @@ jobs:
       run: |
         echo "Deployment summary for schema: ${{ github.event.inputs.schema_name }}"
         /opt/mssql-tools18/bin/sqlcmd \
-          -S ${{ env.AZURE_SQL_SERVER }} \
-          -d ${{ env.AZURE_SQL_DATABASE }} \
-          -U "${{ env.SQL_ADMIN_USER }}" \
-          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -S ${{ secrets.AZURE_SQL_SERVER }} \
+          -d ${{ secrets.AZURE_SQL_DATABASE }} \
+          -U "${{ secrets.AZURE_SQL_USERNAME}}" \
+          -P "${{ secrets.AZURE_SQL_PASSWORD }}" \
           -C \
           -Q "SELECT s.name AS [Schema], t.name AS [Table], SUM(p.rows) AS [Rows] FROM sys.tables t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id INNER JOIN sys.partitions p ON t.object_id = p.object_id WHERE s.name = '${{ github.event.inputs.schema_name }}' AND p.index_id IN (0,1) GROUP BY s.name, t.name ORDER BY t.name;" \
           -W
