@@ -1,0 +1,165 @@
+name: Deploy AdventureWorks to Azure SQL
+
+on:
+  workflow_dispatch:
+    inputs:
+      schema_name:
+        description: 'Schema name for AdventureWorks database'
+        required: true
+        default: 'dbo'
+        type: string
+
+env:
+  AZURE_SQL_SERVER: bijudbserver.database.windows.net
+  AZURE_SQL_DATABASE: bijudb
+  ADVENTURE_WORKS_PATH: adventure_works
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install SQL Server tools
+      run: |
+        curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+        curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+        sudo apt-get update
+        sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
+        echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
+
+    - name: Create schema
+      env:
+        SQL_ADMIN_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
+        SQL_ADMIN_USER: ${{ secrets.AZURE_SQL_USERNAME }}
+      run: |
+        echo "Checking schema: ${{ github.event.inputs.schema_name }}"
+
+        # Check if schema exists
+        SCHEMA_EXISTS=$(/opt/mssql-tools18/bin/sqlcmd \
+          -S ${{ env.AZURE_SQL_SERVER }} \
+          -d ${{ env.AZURE_SQL_DATABASE }} \
+          -U "${{ env.SQL_ADMIN_USER }}" \
+          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -C \
+          -h -1 \
+          -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.schemas WHERE name = '${{ github.event.inputs.schema_name }}'" | tr -d ' ')
+
+        if [ "$SCHEMA_EXISTS" -eq "1" ]; then
+          echo "⚠️  Schema '${{ github.event.inputs.schema_name }}' already exists - skipping creation"
+        else
+          echo "Creating schema: ${{ github.event.inputs.schema_name }}"
+          /opt/mssql-tools18/bin/sqlcmd \
+            -S ${{ env.AZURE_SQL_SERVER }} \
+            -d ${{ env.AZURE_SQL_DATABASE }} \
+            -U "${{ env.SQL_ADMIN_USER }}" \
+            -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+            -C \
+            -Q "CREATE SCHEMA [${{ github.event.inputs.schema_name }}]"
+          echo "✓ Schema created successfully"
+        fi
+
+    - name: Generate table creation scripts from CSVs
+      run: |
+        python3 create_tables_from_csv.py "${{ env.ADVENTURE_WORKS_PATH }}" "${{ github.event.inputs.schema_name }}"
+
+        echo "Generated SQL script:"
+        head -100 create_all_tables.sql
+
+    - name: Create tables in Azure SQL
+      env:
+        SQL_ADMIN_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
+        SQL_ADMIN_USER: ${{ secrets.AZURE_SQL_USERNAME }}
+      run: |
+        echo "Creating tables..."
+        /opt/mssql-tools18/bin/sqlcmd \
+          -S ${{ env.AZURE_SQL_SERVER }} \
+          -d ${{ env.AZURE_SQL_DATABASE }} \
+          -U "${{ env.SQL_ADMIN_USER }}" \
+          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -C \
+          -i create_all_tables.sql
+
+    - name: Verify tables created
+      env:
+        SQL_ADMIN_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
+        SQL_ADMIN_USER: ${{ secrets.AZURE_SQL_USERNAME }}
+      run: |
+        echo "Verifying tables..."
+        TABLE_COUNT=$(/opt/mssql-tools18/bin/sqlcmd \
+          -S ${{ env.AZURE_SQL_SERVER }} \
+          -d ${{ env.AZURE_SQL_DATABASE }} \
+          -U "${{ env.SQL_ADMIN_USER }}" \
+          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -C \
+          -h -1 \
+          -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.tables WHERE schema_id = SCHEMA_ID('${{ github.event.inputs.schema_name }}')" | tr -d ' ')
+
+        echo "Tables created: $TABLE_COUNT"
+
+        if [ "$TABLE_COUNT" -eq "0" ]; then
+          echo "ERROR: No tables were created!"
+          exit 1
+        fi
+
+        echo "✓ Successfully created $TABLE_COUNT tables"
+
+    - name: Import data from CSVs
+      env:
+        SQL_ADMIN_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
+        SQL_ADMIN_USER: ${{ secrets.AZURE_SQL_USERNAME }}
+      run: |
+        echo "Importing CSV data..."
+
+        SUCCESS=0
+        FAILED=0
+
+        for csvfile in ${{ env.ADVENTURE_WORKS_PATH }}/*.csv; do
+          if [ -f "$csvfile" ]; then
+            tablename=$(basename "$csvfile" .csv)
+
+            echo "Importing: $tablename"
+
+            /opt/mssql-tools18/bin/bcp "${{ github.event.inputs.schema_name }}.$tablename" in "$csvfile" \
+              -S ${{ env.AZURE_SQL_SERVER }} \
+              -d ${{ env.AZURE_SQL_DATABASE }} \
+              -U "${{ env.SQL_ADMIN_USER }}" \
+              -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+              -c \
+              -t '\t' \
+              -r '\n' \
+              -F 2 \
+              -C 65001 \
+              -b 1000 \
+              -m 10 && {
+                echo "✓ $tablename"
+                SUCCESS=$((SUCCESS + 1))
+              } || {
+                echo "✗ $tablename (BCP failed)"
+                FAILED=$((FAILED + 1))
+              }
+          fi
+        done
+
+        echo ""
+        echo "Import complete: $SUCCESS succeeded, $FAILED failed"
+
+    - name: Show final results
+      env:
+        SQL_ADMIN_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
+        SQL_ADMIN_USER: ${{ secrets.AZURE_SQL_USERNAME }}
+      run: |
+        echo "Deployment summary for schema: ${{ github.event.inputs.schema_name }}"
+        /opt/mssql-tools18/bin/sqlcmd \
+          -S ${{ env.AZURE_SQL_SERVER }} \
+          -d ${{ env.AZURE_SQL_DATABASE }} \
+          -U "${{ env.SQL_ADMIN_USER }}" \
+          -P "${{ env.SQL_ADMIN_PASSWORD }}" \
+          -C \
+          -Q "SELECT s.name AS [Schema], t.name AS [Table], SUM(p.rows) AS [Rows] FROM sys.tables t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id INNER JOIN sys.partitions p ON t.object_id = p.object_id WHERE s.name = '${{ github.event.inputs.schema_name }}' AND p.index_id IN (0,1) GROUP BY s.name, t.name ORDER BY t.name;" \
+          -W
+
+        echo ""
+        echo "✓ Deployment complete!"
