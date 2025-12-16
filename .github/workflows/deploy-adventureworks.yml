@@ -128,7 +128,7 @@ jobs:
               -U "${{ secrets.AZURE_SQL_USERNAME }}" \
               -P "${{ secrets.AZURE_SQL_PASSWORD}}" \
               -c \
-              -t '\t' \
+              -t ',' \
               -r '\n' \
               -F 2 \
               -C 65001 \
