@@ -11,7 +11,7 @@ def create_table_sql(csv_file, schema_name):
     """Generate CREATE TABLE SQL from CSV file headers"""
     try:
         with open(csv_file, 'r', encoding='utf-8-sig') as f:
-            reader = csv.reader(f, delimiter='\t')
+            reader = csv.reader(f, delimiter=',')
             headers = next(reader)
 
             # Clean header names and limit to 128 characters
