@@ -1,0 +1,6 @@
+AddressID,AddressLine1,AddressLine2,City,StateProvinceID,PostalCode,SpatialLocation,rowguid,ModifiedDate
+1,1970 Napa Ct.,NaN,Bothell,79,98011,E6100...,9AAD...,2018-12-03 00:00:00
+2,9833 Mt. Dias Blv.,NaN,Bothell,79,98011,E6100...,32A5...,2019-11-30 00:00:00
+3,7484 Roundtree Drive,NaN,Bothell,79,98011,E6100...,4C50...,2024-03-06 00:00:00
+4,9539 Glenside Dr,NaN,Bothell,79,98011,E6100...,E594...,2020-02-03 00:00:00
+5,1226 Shoe St.,NaN,Bothell,79,98011,E6100...,FBAF...,2019-12-19 00:00:00
