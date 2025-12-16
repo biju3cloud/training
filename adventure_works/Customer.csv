@@ -1,6 +1,0 @@
-CustomerID,FirstName,MiddleName,LastName,CompanyName,EmailAddress,Phone,rowguid,ModifiedDate
-1,Ali,NULL,Ijaz,AdventureWorks,ali.ijaz@example.com,555-0001,2e01a8ef-15cc-417c-8c2f-980d96642c6d,2025-12-11 15:23:04.233
-2,John,W,Doe,Doe Corp,john.doe@example.com,555-0002,9248f320-d20f-4457-b072-f9551c2222a2,2025-12-11 15:23:04.233
-3,Sara,NULL,Khan,Khan & Co,sara.khan@example.com,555-0003,8ee288fa-0a39-4733-abce-3836cb31da33,2025-12-11 15:23:04.233
-4,Emily,NULL,Stone,NULL,emily.stone@example.com,555-0004,13eb4f8e-86ef-45ff-930f-e40a0a6a8761,2025-12-11 15:23:04.233
-5,Michael,NULL,Jordan,Air Corp,mjordan@example.com,555-0005,44991f70-fd9c-4c14-9ef0-634d08755548,2025-12-11 15:23:04.233
