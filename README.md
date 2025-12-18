@@ -6,3 +6,5 @@ Databricks Delta Live Tables (DLT) pipeline that simulates a real-time power met
 <img width="681" height="454" alt="image" src="https://github.com/user-attachments/assets/1c4b1477-6395-41a2-bf6a-541efd4b40de" />
 
 
+
+<img width="888" height="444" alt="image" src="https://github.com/user-attachments/assets/6f4c7692-bd2b-43b9-a232-24dcdf3ed83a" />
