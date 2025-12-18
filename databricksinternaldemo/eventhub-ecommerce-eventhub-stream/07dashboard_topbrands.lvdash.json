@@ -10,10 +10,10 @@
       "schema": "biju_gold"
     },
     {
-      "name": "6fde7d03",
-      "displayName": "Untitled dataset",
+      "name": "7d13e281",
+      "displayName": "location_performance",
       "queryLines": [
-        ""
+        "SELECT * FROM `na-dbxtraining`.biju_gold.location_performance"
       ]
     }
   ],
@@ -187,74 +187,6 @@
       "pageType": "PAGE_TYPE_CANVAS"
     },
     {
-      "name": "1f36ba28",
-      "displayName": "Generic",
-      "layout": [
-        {
-          "widget": {
-            "name": "total-quantity-sold",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "2610eff3",
-                  "fields": [
-                    {
-                      "name": "sum(total_customers)",
-                      "expression": "SUM(`total_customers`)"
-                    }
-                  ],
-                  "disaggregated": false
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "widgetType": "counter",
-              "encodings": {
-                "value": {
-                  "fieldName": "sum(total_customers)"
-                }
-              },
-              "frame": {
-                "title": "Total Quantity Sold",
-                "showTitle": true,
-                "showDescription": true
-              }
-            }
-          },
-          "position": {
-            "x": 0,
-            "y": 1,
-            "width": 6,
-            "height": 6
-          }
-        },
-        {
-          "widget": {
-            "name": "849256ac",
-            "spec": {
-              "version": 2,
-              "widgetType": "filter-single-select",
-              "encodings": {
-                "fields": []
-              },
-              "frame": {
-                "showTitle": true
-              }
-            }
-          },
-          "position": {
-            "x": 3,
-            "y": 0,
-            "width": 2,
-            "height": 1
-          }
-        }
-      ],
-      "pageType": "PAGE_TYPE_CANVAS"
-    },
-    {
       "name": "824ac5c9",
       "displayName": "Global Filters",
       "layout": [
@@ -282,20 +214,122 @@
     },
     {
       "name": "52d9031e",
-      "displayName": "Untitled page",
+      "displayName": "Order Count by Location",
       "layout": [
         {
           "widget": {
-            "name": "total-customers",
+            "name": "order-count-by-location",
             "queries": [
               {
                 "name": "main_query",
                 "query": {
-                  "datasetName": "2610eff3",
+                  "datasetName": "7d13e281",
                   "fields": [
                     {
-                      "name": "sum(total_customers)",
-                      "expression": "SUM(`total_customers`)"
+                      "name": "location",
+                      "expression": "`location`"
+                    },
+                    {
+                      "name": "sum(order_count)",
+                      "expression": "SUM(`order_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "location",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(order_count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Order Count by Location",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "selectionColor"
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 1,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "98da708b",
+            "queries": [
+              {
+                "name": "dashboards/01f0d77861ef191998476598151a6108/datasets/01f0dc3270a910ccab57cb4cb7363951_location",
+                "query": {
+                  "datasetName": "7d13e281",
+                  "fields": [
+                    {
+                      "name": "location",
+                      "expression": "`location`"
+                    },
+                    {
+                      "name": "location_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
                     }
                   ],
                   "disaggregated": false
@@ -304,23 +338,25 @@
             ],
             "spec": {
               "version": 2,
-              "widgetType": "counter",
+              "widgetType": "filter-single-select",
               "encodings": {
-                "value": {
-                  "fieldName": "sum(total_customers)"
-                }
+                "fields": [
+                  {
+                    "fieldName": "location",
+                    "queryName": "dashboards/01f0d77861ef191998476598151a6108/datasets/01f0dc3270a910ccab57cb4cb7363951_location"
+                  }
+                ]
               },
               "frame": {
-                "title": "Total Customers",
                 "showTitle": true
               }
             }
           },
           "position": {
-            "x": 1,
-            "y": 2,
-            "width": 3,
-            "height": 6
+            "x": 4,
+            "y": 0,
+            "width": 2,
+            "height": 1
           }
         }
       ],

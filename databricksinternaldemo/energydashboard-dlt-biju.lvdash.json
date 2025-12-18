@@ -1,0 +1,194 @@
+{
+  "datasets": [
+    {
+      "name": "6c77705e",
+      "displayName": "gold_daily_customer_kwh_summary",
+      "queryLines": [
+        "SELECT * FROM `na-dbxtraining`.biju_gold.gold_daily_customer_kwh_summary"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "9d5e30bd",
+      "displayName": "Average kWh per Reading by State",
+      "layout": [
+        {
+          "widget": {
+            "name": "total-daily-kwh-consumption",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "6c77705e",
+                  "fields": [
+                    {
+                      "name": "state",
+                      "expression": "`state`"
+                    },
+                    {
+                      "name": "avg(avg_kwh_per_reading_daily)",
+                      "expression": "AVG(`avg_kwh_per_reading_daily`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "state",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_kwh_per_reading_daily)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "title": "Average kWh per Reading by State",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "85148152",
+      "displayName": "Energy Plan Distribution",
+      "layout": [
+        {
+          "widget": {
+            "name": "energy-plan-distribution",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "6c77705e",
+                  "fields": [
+                    {
+                      "name": "count(customer_id)",
+                      "expression": "COUNT(`customer_id`)"
+                    },
+                    {
+                      "name": "plan_name",
+                      "expression": "`plan_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "count(customer_id)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "plan_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true,
+                  "text": {
+                    "fieldName": "count(customer_id)"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Energy Plan Distribution",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "a4ac38da",
+            "queries": [
+              {
+                "name": "dashboards/01f0dc2481471c5b923ab55a631bbebc/datasets/01f0dc24b5f7151397f311a5654718bd_plan_name",
+                "query": {
+                  "datasetName": "6c77705e",
+                  "fields": [
+                    {
+                      "name": "plan_name",
+                      "expression": "`plan_name`"
+                    },
+                    {
+                      "name": "plan_name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "plan_name",
+                    "queryName": "dashboards/01f0dc2481471c5b923ab55a631bbebc/datasets/01f0dc24b5f7151397f311a5654718bd_plan_name"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 1,
+            "width": 2,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
