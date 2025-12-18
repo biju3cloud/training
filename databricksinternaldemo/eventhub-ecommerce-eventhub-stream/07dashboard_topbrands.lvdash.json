@@ -8,6 +8,13 @@
       ],
       "catalog": "na-dbxtraining",
       "schema": "biju_gold"
+    },
+    {
+      "name": "6fde7d03",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        ""
+      ]
     }
   ],
   "pages": [
@@ -272,6 +279,52 @@
         }
       ],
       "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    },
+    {
+      "name": "52d9031e",
+      "displayName": "Untitled page",
+      "layout": [
+        {
+          "widget": {
+            "name": "total-customers",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2610eff3",
+                  "fields": [
+                    {
+                      "name": "sum(total_customers)",
+                      "expression": "SUM(`total_customers`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_customers)"
+                }
+              },
+              "frame": {
+                "title": "Total Customers",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 2,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
     }
   ],
   "uiSettings": {
