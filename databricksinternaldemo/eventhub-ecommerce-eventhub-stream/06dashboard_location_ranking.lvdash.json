@@ -65,7 +65,7 @@
                 "colors": [
                   {
                     "themeColorType": "visualizationColors",
-                    "position": 1
+                    "position": 3
                   },
                   {
                     "themeColorType": "visualizationColors",
@@ -109,9 +109,54 @@
           },
           "position": {
             "x": 1,
-            "y": 1,
+            "y": 0,
             "width": 3,
             "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cbc5a175",
+            "queries": [
+              {
+                "name": "dashboards/01f0da9608f8102ebe8c68ae2388f4ed/datasets/01f0da961de3180795f311cb0e9a171b_location",
+                "query": {
+                  "datasetName": "1a0b5949",
+                  "fields": [
+                    {
+                      "name": "location",
+                      "expression": "`location`"
+                    },
+                    {
+                      "name": "location_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "location",
+                    "queryName": "dashboards/01f0da9608f8102ebe8c68ae2388f4ed/datasets/01f0da961de3180795f311cb0e9a171b_location"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 2,
+            "height": 1
           }
         }
       ],
