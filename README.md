@@ -1,4 +1,5 @@
-<img width="894" height="584" alt="image" src="https://github.com/user-attachments/assets/efe7a9ee-5147-4131-97ab-9041b240b008" />  
+<img width="699" height="456" alt="image" src="https://github.com/user-attachments/assets/f81277aa-c53c-464e-98af-438d5198b3a5" />
+
 
 
 Databricks Delta Live Tables (DLT) pipeline that simulates a real-time power meter data ingestion process using a streaming data generator.
@@ -7,4 +8,5 @@ Databricks Delta Live Tables (DLT) pipeline that simulates a real-time power met
 
 
 
-<img width="888" height="444" alt="image" src="https://github.com/user-attachments/assets/6f4c7692-bd2b-43b9-a232-24dcdf3ed83a" />
+<img width="726" height="390" alt="image" src="https://github.com/user-attachments/assets/1872a4b3-366a-4403-b90d-49a61e6595b9" />
+
