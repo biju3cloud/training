@@ -1,0 +1,13 @@
+# Databricks App resource for Streamlit MCP Vector Search
+# Note: Apps may not be fully supported in bundles yet. Use deploy_app.sh for deployment.
+# See https://docs.databricks.com/en/dev-tools/bundles/apps.html
+
+resources:
+  apps:
+    streamlitmcpcall:
+      name: streamlitmcpcall
+      description: "Streamlit app for MCP Vector Search - Search support tickets using vector similarity"
+      
+      # Note: App deployment should be done via deploy_app.sh script
+      # This file is kept for future bundle support
+
