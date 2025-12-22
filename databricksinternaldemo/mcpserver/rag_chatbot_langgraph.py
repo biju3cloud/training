@@ -17,7 +17,7 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install langchain langchain-databricks langgraph gradio databricks-sdk
+# MAGIC %pip install langchain langchain-databricks langgraph gradio databricks-sdk databricks-langchain
 
 # COMMAND ----------
 
@@ -26,7 +26,11 @@
 
 # COMMAND ----------
 
-from langchain_community.chat_models import ChatDatabricks
+try:
+    from databricks_langchain import ChatDatabricks
+except ImportError:
+    # Fallback to old import
+    from langchain_community.chat_models import ChatDatabricks
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langgraph.graph import StateGraph, END
@@ -97,9 +101,11 @@ Generate a SQL query that will retrieve relevant data to answer this question.
 SQL Query:"""
 
     try:
+        # Use Foundation Model API - adjust model name based on your workspace
+        # Common options: "databricks-meta-llama-3-70b-instruct", "databricks-mixtral-8x7b-instruct", etc.
+        # Or use a custom endpoint name if you have one deployed
         llm = ChatDatabricks(
-            model="databricks-meta-llama-3-1-70b-instruct",
-            endpoint="databricks-meta-llama-3-1-70b-instruct",
+            endpoint=LLM_ENDPOINT,  # Use configured endpoint
             temperature=0.1
         )
         
@@ -206,8 +212,7 @@ Please answer the question based on the context data provided above. If the cont
     
     try:
         llm = ChatDatabricks(
-            model="databricks-meta-llama-3-1-70b-instruct",
-            endpoint="databricks-meta-llama-3-1-70b-instruct",
+            endpoint=LLM_ENDPOINT,  # Use configured endpoint
             temperature=0.7
         )
         
