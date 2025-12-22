@@ -13,6 +13,11 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ![Description](/Workspace/Users/biju.thottathil@3cloudsolutions.com/training/databricksinternaldemo/mcpserver/ragchat.png)
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ## Install Required Packages
 
 # COMMAND ----------
